@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    {% block head %}
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+        <title>{% block title %}Base-Template{% endblock %}</title>
+        <link href="https://cdn.bootcss.com/mdui/0.4.2/css/mdui.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+        <script src="../static/js/jquery-3.3.1.min.js"></script>
+        <script src="../static/js/popper.min.js"></script>
+        <script src="../static/js/bootstrap.min.js"></script>
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap_v4.min.css') }}">
+        <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+          <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+        {% block styles %}{% endblock %}
+        <style>
+            #alert-box-success,
+            #alert-box-danger{
+                position: fixed;
+                width: 350px;
+                top: 20%;
+                left: 50%;
+                transform: translateX(-175px);
+                z-index: 9999;
+                text-align: center;
+            }
+            .hidden{
+                display: none;
+            }
+        body{
+            background: #f6f6f6;
+        }
+        #inputGroup-sizing-sm{
+            padding: 0;
+            border: none;
+            cursor: pointer;
+        }
+        #inputGroup-sizing-sm .input-group-text{
+            border-right: none;
+            background: white;
+        }
+        </style>
+        <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+
+    {% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="navbar-header">
+        <a class="navbar-brand thumbnail" href="{{ url_for('index') }}" style="font-family: 楷体; font-size: 30px">区域科技型企业画像系统</a>
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarColor01">
+{#            <ul class="navbar-nav" style="margin-right: 50%">#}
+{#                <li>企业检索</li>#}
+{#                <li>区域情况</li>#}
+{#                {{ render_nav_item('activity.manager', '活动安排') }}#}
+{#                {{ render_nav_item('schedule.schedule', '日程安排') }}#}
+{#                {{ render_nav_item('visit_record.manage_visit_record', '拜访记录') }}#}
+{#            </ul>#}
+            <ul class="navbar-nav ml-auto">
+                <li class="clearfix"><a class="nav-item nav-link active float-right" href="{{ url_for('index') }}">企业检索</a></li>
+                <li class="clearfix"><a class="nav-item nav-link active float-right" href="#">区域情况</a></li>
+            </ul>
+    </div>
+</nav>
+
+<main>
+    {# 消息 #}
+    {% for message in get_flashed_messages(with_categories=True) %}
+    <div class="alert alert-{{ message[0] }} text-center" role="alert">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message[1] }}
+    </div>
+    {% endfor %}
+    {% block main %}
+    {% endblock %}
+</main>
+<div id="alert-box-success" class="alert alert-success hidden">
+    <strong><i class="mdui-icon material-icons">&#xe86c;</i><span class="alert-message">提交成功，等待管理员审核</span></strong>
+</div>
+<div id="alert-box-danger" class="alert alert-danger hidden">
+    <strong><i class="mdui-icon material-icons">&#xe000;</i><span class="alert-message">提交失败，请稍后再试</span></strong>
+</div>
+<footer>
+    {% block footer %}
+    {% endblock %}
+</footer>
+<script>
+    /**
+ * 显示/隐藏提示框
+ * @param {boolean} isSuccess
+ * @param {string} modal 模态框id, 用于隐藏模态框
+ * @param {string} message 用于显示的消息
+ */
+function toggle_alert(isSuccess, modal, message = ""){
+    if(modal){
+        $(`#${modal}`).modal("hide");
+    }
+
+    let alert_success = $("#alert-box-success");
+    let alert_error = $("#alert-box-danger");
+    // 显示操作成功的提示框
+    if(isSuccess){
+        alert_error.hide();
+
+        if(message){
+            alert_success.find('.alert-message').text(message);
+        }
+
+        alert_success.show(200);
+        setTimeout(()=>{
+            alert_success.hide(200);
+        }, 2500)
+    }else{
+        alert_success.hide();
+
+        if(message){
+            alert_error.find('.alert-message').text(message);
+        }
+
+        alert_error.show(200);
+        setTimeout(()=>{
+            alert_error.hide(200);
+        },2500);
+    }
+}
+</script>
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/bootstrap_v4.min.js') }}"></script>
+{% endblock %}
+</body>
+</html>

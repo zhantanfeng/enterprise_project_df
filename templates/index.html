@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    首页
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="../static/css/index.css">
+{% endblock %}
+
+{% block scripts %}
+      {{ super() }}
+{#    <script src="{{ url_for('static', filename='js/schedule.js') }}"></script>#}
+{% endblock %}
+
+
+{% block main %}
+    <div class="container" style="margin: 15% auto;">
+        <form method="post" >
+            <div class="input-group" style="width: 70%; margin: auto">
+              <input type="text" class="form-control" style="height: 60px;"  placeholder="输入企业名/企业经营范围/企业成果" id="enterprise" name="enterprise">
+              <div class="input-group-append">
+                  <button type="submit" class="btn btn-primary mx-auto" style="width:140px;" onclick="javascript:this.form.action='search_en'";>搜索</button>
+              </div>
+
+            </div>
+            <div style="width: 70%; margin: 10px auto">
+                    <div class="radio" style="float: left;padding-right: 30px">
+                      <label><input type="radio" value="企业名" name="optradio" checked>&nbsp;企业名</label>
+                    </div>
+                    <div class="radio" style="float: left;padding-right: 30px">
+                      <label><input type="radio" value="企业经营范围"  name="optradio">&nbsp;企业经营范围</label>
+                    </div>
+                    <div class="radio">
+                      <label><input type="radio" value="企业成果" name="optradio">&nbsp;企业成果</label>
+                    </div>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

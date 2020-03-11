@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    检索结果
+{% endblock %}
+
+{% block styles %}
+<style type="text/css">
+    .page-header {
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    a:hover{
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+
+<div class="container">
+    <div class="row page-header">
+        <div class="col-sm-12" style="text-align:center">
+            <span class="h2">企业</span>
+            <img src="../../static/images/logo.png" style="display: inline-block;vertical-align:bottom">
+            <span class="h2">检索</span>
+        </div>
+    </div>
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-sm-8 offset-sm-2">
+            <form method="post" action="">
+                <div class="input-group">
+                    <input type="text" id="enterprise" name="enterprise" class="form-control" placeholder="Search for enterprises...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit" onclick="javascript:this.form.action='search_en'";>Go!</button>
+                    </span>
+                </div><!-- /input-group -->
+                <div style="width: 70%; margin: 10px 0px">
+                    <div class="radio" style="float: left;padding-right: 30px">
+                      <label><input type="radio" value="企业名" name="optradio" checked>&nbsp;企业名</label>
+                    </div>
+                    <div class="radio" style="float: left;padding-right: 30px">
+                      <label><input type="radio" value="企业经营范围"  name="optradio">&nbsp;企业经营范围</label>
+                    </div>
+                    <div class="radio">
+                      <label><input type="radio" value="企业成果" name="optradio">&nbsp;企业成果</label>
+                    </div>
+            </div>
+            </form>
+        </div>
+    </div>
+    <br>
+    <br>
+    {% if enterprises | length == 0 %}
+        <div class="row">
+            <div class="col-sm-8 offset-sm-2" id="search-results">
+                <h5>
+                    未找到"<strong>{{ enterprise_name }}</strong>"相关结果
+                </h5>
+            </div>
+        </div>
+    {% endif %}
+
+    {% for enterprise in enterprises %}
+        <div class="row">
+            <div class="col-sm-8 offset-sm-2" id="search-results">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">
+                            <span class="text-primary">
+                                <a href="#">
+                                    {{ enterprise[1] }}
+                                </a>
+                            </span>
+                        </h3>
+                        <small>经营状态：
+                            <span class="text-primary">
+                                 {{ enterprise[2] }}&nbsp;&nbsp;&nbsp;&nbsp;
+                            </span>
+                        </small>
+                        <small>注册资金：
+                            <span class="text-primary">
+                                 {{ enterprise[4] }}&nbsp;&nbsp;&nbsp;&nbsp;
+                            </span>
+                        </small>
+                        <small>法人代表：
+                            <span class="text-primary">
+                                {{ enterprise[3] }}&nbsp;&nbsp;&nbsp;&nbsp;
+                            </span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+    {% endfor %}
+</div>
+
+{% endblock %}
