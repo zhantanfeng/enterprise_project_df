@@ -26,6 +26,10 @@ def search_en():
             result = en_pa_service.get_en_info_by_patent(search_content)
             return render_template("en_info.html", enterprises=result, enterprise_name = search_content)
 
+@app.route('/area_info')
+def area_info():
+    return render_template("area_info.html")
+
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True
     app.run(debug=True)

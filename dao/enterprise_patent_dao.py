@@ -79,8 +79,34 @@ def get_en_name_by_pa_id(pa_id):
     result = cursor.fetchone()[0]
     return result
 
+def get_count(field):
+    """
+     根据技术领域寻找数量
+    """
+    query_param = ['%%%s%%' % field]
+    sql = "select count(*) from enterprise_patent where pa_first_kind like %s "
+    cursor.execute(sql, query_param)
+    result = cursor.fetchone()
+    return result
+
+def get_engineer(field):
+    """
+    根据技术领域寻找相关工程师
+    :param field:
+    :return:
+    """
+    query_param = ['%%%s%%' % field]
+    sql = "select pa_inventor from enterprise_patent where pa_first_kind like %s "
+    cursor.execute(sql, query_param)
+    temp = cursor.fetchall()
+    result = []
+    for i in temp:
+        for j in i[0].split(","):
+            result.append(j)
+    return list(set(result))
 
 if __name__ == "__main__":
-    print(get_pa_id_by_patent("不锈钢"))
+    # print(get_pa_id_by_patent("不锈钢"))
     # gg = get_en_name_by_pa_id(56460)
     # print(gg)
+    print(get_engineer("电子信息技术"))
