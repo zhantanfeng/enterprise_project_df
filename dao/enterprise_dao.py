@@ -49,5 +49,6 @@ def get_en_info_by_scope(scope):
 
 
 
+
 if __name__ == "__main__":
     print(get_en_info_by_name_1("昆山雅森电子材料科技有限公司"))
