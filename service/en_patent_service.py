@@ -3,6 +3,7 @@
 """
 import dao.enterprise_patent_dao as enterprise_patent_dao
 import dao.enterprise_dao as enterprise_dao
+from collections import Counter
 
 def get_en_info_by_patent(searched_patent):
     """
@@ -19,13 +20,100 @@ def get_en_info_by_patent(searched_patent):
         result.append(enterprise_dao.get_en_info_by_name_1(i))
     return result
 
-def get_count_by_field():
-    field = ["电子信息技术", "生物与新医药技术", "新材料技术", "资源与环境技术", "高新技术改造传统产业", "高技术服务业", "航空航天技术", "新能源及节能技术"]
+def get_pa_count_by_firstkind():
+    """
+    初始获取所有一类技术领域的专利数量
+    :return:
+    """
+    firstkind = get_all_field()[0]
     result = []
-    for i in field:
-        result.append([i, enterprise_patent_dao.get_count(i)[0]])
-    print(result)
+    for i in firstkind:
+        result.append([i, enterprise_patent_dao.get_count_by_firstkind(i)[0]])
+    return result
+
+def get_count_by_firstkind(field):
+    """
+    获取第二类的专利数量
+    :param field:
+    :return:
+    """
+    second_field = enterprise_patent_dao.get_second_field(field)
+    result = []
+    for i in second_field:
+        result.append([i, enterprise_patent_dao.get_count_by_secondkind(i)[0]])
+    return result
+
+def get_count_by_secondkind(field):
+    """
+    获取第三类的专利数量
+    :param field:
+    :return:
+    """
+    third_field = enterprise_patent_dao.get_third_field(field)
+    result = []
+    for i in third_field:
+        result.append([i, enterprise_patent_dao.get_count_by_thirdkind(i)[0]])
+    return result
+
+def get_all_field():
+    """
+    获取所有技术领域
+    :return:
+    """
+    temp = enterprise_patent_dao.get_all_field()
+    firstkind = []
+    secondkind = []
+    thirdkind = []
+    for i in temp[0]:
+        for j in i:
+            firstkind.append(j[0])
+    for i in temp[1]:
+        for j in i:
+            secondkind.append(j[0])
+    for i in temp[2]:
+        for j in i:
+            thirdkind.append(j[0])
+    result = [firstkind, secondkind, thirdkind]
+    return result
+
+def get_engineer_and_en_by_field(field):
+    """
+    根据技术领域获取工程师以及所在的公司
+    :param field: 技术领域
+    :return: 前10家的企业以及专利前10的工程师
+    """
+    temp = enterprise_patent_dao.get_engineer_and_en_by_field(field)
+    en_id_list = []
+    for i in temp:
+        en_id_list.append(i[0])
+    en_id_dict = {}
+    for key in en_id_list:
+        en_id_dict[key] = en_id_dict.get(key, 0) + 1
+    list1 = sorted(en_id_dict.items(), key=lambda x:x[1], reverse=True)
+    ten_en = []
+    for i in list1[0:10]:
+        ten_en.append(i[0])
+    result = []
+    for i in ten_en:
+        temp1 = []
+        for j in temp:
+            if j[0] == i:
+                temp1.extend(j[1].split(","))
+        engineer_dict = {}
+        for key in temp1:
+            engineer_dict[key] = engineer_dict.get(key, 0) + 1
+        engineer_list = sorted(engineer_dict.items(), key=lambda x: x[1], reverse=True)
+        ten_engineer = []
+        for x in engineer_list[0:10]:
+            ten_engineer.append(x[0])
+        if ten_engineer != ['不公告发明人']:
+            result.append([ enterprise_dao.get_en_name_by_en_id(i), ten_engineer ])
+    return result
+
+
 
 
 if __name__ == "__main__":
-    get_count_by_field()
+    # print(get_count_by_firstkind("电子信息技术"))
+    print(get_pa_count_by_firstkind())
+    # pass

@@ -1,10 +1,14 @@
-<!DOCTYPE html>
-<html style="height: 100%">
-   <head>
-       <meta charset="utf-8">
-   </head>
-   <body style="height: 100%; margin: 0">
-       <div id="container" style="height: 100%"></div>
+{% extends 'base.html' %}
+
+{% block title %}
+    首页
+{% endblock %}
+
+{% block main %}
+   <div id="container" style="height: 100%"></div>
+{% endblock %}
+
+{% block scripts %}
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl/dist/echarts-gl.min.js"></script>
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat/dist/ecStat.min.js"></script>
@@ -13,56 +17,118 @@
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/world.js"></script>
        <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=xfhhaTThl11qYVrqLZii6w8qE5ggnhrY&__ec_v__=20190126"></script>
        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/bmap.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+       <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=CXarKKMKBd6t5CGxs0s8rUGs2qhyniII"></script>
        <script type="text/javascript">
-var dom = document.getElementById("container");
-var myChart = echarts.init(dom);
-var app = {};
-option = null;
-option = {
-    title: {
-        text: '区域技术领域展示',
-        {#subtext: '纯属虚构',#}
-        left: 'center'
-    },
-    tooltip: {
-        trigger: 'item',
-        formatter: '{a} <br/>{b} : {c} ({d}%)'
-    },
-    legend: {
-        orient: 'vertical',
-        left: 'left',
-        data: ["电子信息技术", "生物与新医药技术", "新材料技术", "资源与环境技术", "高新技术改造传统产业", "高技术服务业", "航空航天技术", "新能源及节能技术"]
-    },
-    series: [
-        {
-            name: '技术领域',
-            type: 'pie',
-            radius: '55%',
-            center: ['50%', '60%'],
-            data: [
-               {value: 10687, name: '电子信息技术'},
-                {value: 11675, name: '生物与新医药技术'},
-                {value: 8869, name: '新材料技术'},
-                {value: 9788, name: '资源与环境技术'},
-                {value: 8006, name: '高新技术改造传统产业'},
-                {value: 2860, name: '高技术服务业'},
-                {value: 773, name: '航空航天技术'},
-                {value: 8006, name: '新能源及节能技术'}
-            ],
-            emphasis: {
-                itemStyle: {
-                    shadowBlur: 10,
-                    shadowOffsetX: 0,
-                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+            var dom = document.getElementById("container");
+            var app = {};
+
+            //用于使chart自适应高度和宽度,通过窗体高宽计算容器高宽
+            var resizeWorldMapContainer = function () {
+                dom.style.width = window.innerWidth - 10-+'px';
+                dom.style.height = window.innerHeight - 80+'px';
+            };
+            //设置容器高宽
+            resizeWorldMapContainer();
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(dom);
+           $(document).ready(function(){
+               $.ajax({
+                    type: "get",
+                    url: "/init_pic",
+                    dataType: "json",
+                    success: function (json_data) {
+                        if (json_data['status'] != 'ok') {
+                            console.log('获取数据失败');
+                            return false;
+                        }
+                        setOption(json_data['data1'], json_data['data2']);
+                    },
+                    error: function (error) {
+                    }
+                });
+           });
+
+            //添加事件
+            m=myChart.on('click', function (params) {
+                //获取到绑定的数据
+                let data = {
+                    "name": params.data.name
+                    };
+                //发送请求
+                //发送请求
+                $.ajax({
+                    type: "get",
+                    url: "/get_data",
+                    data: data,
+                    dataType: "json",
+                    success: function (json_data) {
+                        if (json_data['status'] != 'ok' &&  json_data['status'] != 'third') {
+                            console.log('获取数据失败');
+                            return false;
+                        }
+                        else if (json_data['status'] == 'third'){
+                            window.location = '/get_engineer/' + data.name;
+                        }
+                        setOption(json_data['data1'], json_data['data2']);
+                    },
+                    error: function (error) {
+                    }
+                });
+            });
+                function setOption(data1, data2) {
+                    var dom = document.getElementById("container");
+                    var myChart = echarts.init(dom);
+                    var app = {};
+                    option = {
+                    title: {
+                        text: '区域专利所属技术领域展示',
+                        {#subtext: '纯属虚构',#}
+                        left: 'center',
+                        textStyle: {
+                          fontSize: 26,
+                          fontWeight: 'bolder',
+                          color: '#000080'
+                        },
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: '{a} <br/>{b} : {c} ({d}%)'
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        x: 1500,
+                        y: 'center',
+                        itemWidth: 24,   // 设置图例图形的宽
+                        itemHeight: 18,  // 设置图例图形的高
+                        textStyle: {
+                          fontSize: 26,
+                          fontWeight: 'bolder'
+                        },
+                        data: data1
+                    },
+                    series: [
+                        {
+                            name: '技术领域',
+                            type: 'pie',
+                            radius: '55%',
+                            center: ['50%', '60%'],
+                            data: data2,
+                            emphasis: {
+                                itemStyle: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }
+                    ]
+                };
+                    if (option && typeof option === "object") {
+                    myChart.setOption(option, true);
                 }
-            }
-        }
-    ]
-};
-;
-if (option && typeof option === "object") {
-    myChart.setOption(option, true);
-}
+                }
+
+
        </script>
-   </body>
-</html>
+{% endblock %}

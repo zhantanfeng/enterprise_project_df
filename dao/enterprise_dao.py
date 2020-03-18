@@ -23,6 +23,17 @@ def get_en_info_by_name_1(en_name):
     result = cursor.fetchone()
     return result
 
+def get_en_name_by_en_id(en_id):
+    """
+    根据企业id获取企业名
+    :param en_id:
+    :return:
+    """
+    sql = "select en_name from en_base_info where en_id =%s" .format(en_id)
+    cursor.execute(sql, en_id)
+    result = cursor.fetchone()
+    return result[0]
+
 def get_en_info_by_name_2(en_name):
     """
     根据企业名获取企业列表，模糊查询
@@ -51,4 +62,5 @@ def get_en_info_by_scope(scope):
 
 
 if __name__ == "__main__":
-    print(get_en_info_by_name_1("昆山雅森电子材料科技有限公司"))
+    # print(get_en_info_by_name_1("昆山雅森电子材料科技有限公司"))
+    print(get_en_name_by_en_id("17348"))
