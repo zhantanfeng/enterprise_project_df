@@ -216,6 +216,22 @@ def get_second_ipc(ipc_id):
             result.append([i[0], i[1]])
     return result
 
+def get_second_ipc():
+    """
+    获取第二类ipc目录，只有4位
+    :return:
+    """
+    sql = "select ipc_id, ipc_content from ipc where char_length (ipc_id) = 4"
+    cursor.execute(sql)
+    temp = cursor.fetchall()
+    result = []
+    for i in temp:
+        if "(" in i[1]:
+            result.append([i[0], i[1][0:i[1].index("(")]])
+        else:
+            result.append([i[0], i[1]])
+    return result
+
 def get_third_ipc(ipc_id):
     """
     获取第三类ipc目录，超过4位
@@ -229,6 +245,24 @@ def get_third_ipc(ipc_id):
     for i in temp:
         if "(" in i[1]:
             result.append([i[0], i[1][0:i[1].index("(")]])
+        else:
+            result.append([i[0], i[1]])
+    return result
+
+
+def get_third_ipc():
+    """
+    获取第三类ipc目录，超过4位
+    :return:
+    """
+    sql = "select ipc_id, ipc_content from ipc where char_length (ipc_id) > 4"
+    cursor.execute(sql)
+    temp = cursor.fetchall()
+    result = []
+    for i in temp:
+        if "(" in i[1]:
+            temp1 = i[0][4:7].replace("0","")
+            result.append([i[0][0:4]+temp1+i[0][7:], i[1][0:i[1].index("(")]])
         else:
             result.append([i[0], i[1]])
     return result
@@ -256,6 +290,25 @@ def get_engineer_and_en_by_ipc(ipc_id):
     result = cursor.fetchall()
     return result
 
+def get_count_with_ipc(ipc_id):
+    """
+    根据ipc获取相关的所有工程师数量
+    :return:
+    """
+    query_param = ['%s%%' % ipc_id]
+    sql = "select pa_inventor from enterprise_patent where pa_main_kind_num like %s"
+    cursor.execute(sql, query_param)
+    temp = cursor.fetchall()
+    result = []
+    for i in temp:
+        for j in i:
+            result.append(j)
+    result = list(set(result))
+    return len(result)
+
+
+
+
 if __name__ == "__main__":
     # print(get_pa_id_by_patent("不锈钢"))
     # gg = get_en_name_by_pa_id(56460)
@@ -263,6 +316,7 @@ if __name__ == "__main__":
     # print(get_engineer("电子信息技术"))
     # print(get_all_field())
     # print(get_engineer_and_en_by_field("低温余热发电技术"))
-    print(get_engineer_and_en_by_ipc("A23C7/00"))
+    # print(get_engineer_and_en_by_ipc("A23C7/00"))
     # print(get_patent_by_first_ipc("A"))
+    print(get_third_ipc())
     # pass

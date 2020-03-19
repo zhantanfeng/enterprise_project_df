@@ -34,6 +34,10 @@ def area_info():
 def patent_info():
     return render_template("patent_info.html")
 
+@app.route('/engineer_info')
+def engineer_info():
+    return render_template("engineer_info.html")
+
 @app.route('/init_field_pic')
 def init_field_pic():
     """
@@ -58,6 +62,25 @@ def init_patent_pic():
     :return:
     """
     data = en_pa_service.get_patent_by_first_ipc()
+    data1 = []
+    data2 = []
+    for i in data:
+        data1.append(i[0])
+        data2.append({"value": i[1], "name": i[0]})
+    return jsonify({
+        'status': 'ok',
+        'data1': data1,
+        'data2': data2
+    })
+
+
+@app.route('/init_engineer_bar')
+def init_engineer_bar():
+    """
+    初始化工程师分组的柱状图
+    :return:
+    """
+    data = en_pa_service.get_engineer_count_with_first_ipc()
     data1 = []
     data2 = []
     for i in data:
@@ -164,6 +187,42 @@ def get_ipc_data():
             'status': 'third'
         })
 
+
+@app.route('/get_engineer_second_ipc')
+def get_engineer_second_ipc():
+    """
+    根据第二类ipc_id获取工程师数量
+    :return:
+    """
+    data = en_pa_service.get_engineer_count_with_second_ipc()
+    data1 = []
+    data2 = []
+    for i in data:
+        data1.append(i[0])
+        data2.append({"value": i[1], "name": i[0]})
+    return jsonify({
+        'status': 'ok',
+        'data1': data1,
+        'data2': data2
+    })
+
+@app.route('/get_engineer_third_ipc')
+def get_engineer_third_ipc():
+    """
+    根据第三类ipc_id获取工程师数量
+    :return:
+    """
+    data = en_pa_service.get_engineer_count_with_third_ipc()
+    data1 = []
+    data2 = []
+    for i in data:
+        data1.append(i[0])
+        data2.append({"value": i[1], "name": i[0]})
+    return jsonify({
+        'status': 'ok',
+        'data1': data1,
+        'data2': data2
+    })
 
 @app.route("/get_field_engineer/<field>")
 def get_field_engineer(field):
