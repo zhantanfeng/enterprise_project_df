@@ -79,9 +79,10 @@ def get_en_name_by_pa_id(pa_id):
     result = cursor.fetchone()[0]
     return result
 
-def get_count(field):
+
+def get_count_by_firstkind(field):
     """
-     根据技术领域寻找数量
+     根据第一类技术领域寻找专利数量
     """
     query_param = ['%%%s%%' % field]
     sql = "select count(*) from enterprise_patent where pa_first_kind like %s "
@@ -89,14 +90,80 @@ def get_count(field):
     result = cursor.fetchone()
     return result
 
-def get_engineer(field):
+def get_count_by_secondkind(field):
     """
-    根据技术领域寻找相关工程师
+     根据第二类技术领域寻找专利数量
+    """
+    query_param = ['%%%s%%' % field]
+    sql = "select count(*) from enterprise_patent where pa_second_kind like %s "
+    cursor.execute(sql, query_param)
+    result = cursor.fetchone()
+    return result
+
+def get_count_by_thirdkind(field):
+    """
+     根据第三类技术领域寻找专利数量
+    """
+    query_param = ['%%%s%%' % field]
+    sql = "select count(*) from enterprise_patent where pa_third_kind like %s "
+    cursor.execute(sql, query_param)
+    result = cursor.fetchone()
+    return result
+
+def get_all_field():
+    """
+    获取所有技术领域
+    :return:
+    """
+    sql1 = "select distinct firstkind from technical_field"
+    sql2 = "select distinct secondkind from technical_field"
+    sql3 = "select distinct thirdkind from technical_field"
+    cursor.execute(sql1)
+    firstkind = cursor.fetchall()
+    cursor.execute(sql2)
+    secondkind = cursor.fetchall()
+    cursor.execute(sql3)
+    thirdkind = cursor.fetchall()
+    result = [[firstkind],[secondkind],[thirdkind]]
+    return result
+
+def get_second_field(field):
+    """
+    根据一级技术领域寻找二级技术领域
+    :param field:
+    :return:
+    """
+    sql = "select distinct secondkind from technical_field where firstkind = %s " .format(field)
+    cursor.execute(sql, field)
+    temp = cursor.fetchall()
+    result = []
+    for i in temp:
+        result.append(i[0])
+    return result
+
+
+def get_third_field(field):
+    """
+    根据二级技术领域寻找三级技术领域
+    :param field:
+    :return:
+    """
+    sql = "select distinct thirdkind from technical_field where secondkind = %s " .format(field)
+    cursor.execute(sql, field)
+    temp = cursor.fetchall()
+    result = []
+    for i in temp:
+        result.append(i[0])
+    return result
+
+def get_engineer_by_thirdkind(field):
+    """
+    根据第三类技术领域寻找相关工程师
     :param field:
     :return:
     """
     query_param = ['%%%s%%' % field]
-    sql = "select pa_inventor from enterprise_patent where pa_first_kind like %s "
+    sql = "select pa_inventor from enterprise_patent where pa_third_kind like %s "
     cursor.execute(sql, query_param)
     temp = cursor.fetchall()
     result = []
@@ -105,8 +172,24 @@ def get_engineer(field):
             result.append(j)
     return list(set(result))
 
+
+def get_engineer_and_en_by_field(field):
+    """
+    根据技术领域获取工程师以及所在的公司
+    :param field: 技术领域
+    :return: 公司以及工程师
+    """
+    query_param = ['%%%s%%' % field]
+    sql = "select en_id, pa_inventor from enterprise_patent where pa_third_kind like %s "
+    cursor.execute(sql, query_param)
+    result = cursor.fetchall()
+    return result
+
 if __name__ == "__main__":
     # print(get_pa_id_by_patent("不锈钢"))
     # gg = get_en_name_by_pa_id(56460)
     # print(gg)
-    print(get_engineer("电子信息技术"))
+    # print(get_engineer("电子信息技术"))
+    # print(get_all_field())
+    # print(get_engineer_and_en_by_field("低温余热发电技术"))
+    pass
