@@ -267,6 +267,48 @@ def get_third_ipc():
             result.append([i[0], i[1]])
     return result
 
+def get_ipc_content_by_ipc_id(ipc_id):
+    """
+    根据ipc_id获取ipc内容
+    :return:
+    """
+    if len(ipc_id) > 4:
+        ipc_id = ipc_id[0:4]
+    sql = "select ipc_content from ipc where ipc_id = %s" .format(ipc_id)
+    cursor.execute(sql, ipc_id)
+    temp = cursor.fetchone()
+    result = ''
+    if "(" in temp[0]:
+        result = temp[0][0: temp[0].index("(")]
+    else:
+        result = temp[0]
+    return result
+
+def get_all_third_ipc():
+    """
+    从专利表中统计第三类ipc目录
+    :return:
+    """
+    sql = "select pa_main_kind_num from enterprise_patent"
+    cursor.execute(sql)
+    temp = cursor.fetchall()
+    result = []
+    for i in temp:
+        result.append(i[0])
+    result_dict = {}
+    for key in result:
+        result_dict[key] = result_dict.get(key, 0) + 1
+    result_1 = sorted(result_dict.items(), key=lambda x:x[1], reverse=True)
+    result_2 = []
+    for i in result_1:
+        if len(i[0]) > 5:
+            result_2.append([i[0],i[1]])
+    result_2 = sorted(result_2, key=lambda x:x[1], reverse=True)[0:50]
+    final_result = []
+    for i in result_2:
+        final_result.append([i[0], get_ipc_content_by_ipc_id(i[0])])
+    return final_result
+
 def get_patent_by_ipc(ipc_id):
     """
     获取ipc_id开头的所有专利数量
@@ -306,6 +348,20 @@ def get_count_with_ipc(ipc_id):
     result = list(set(result))
     return len(result)
 
+def get_count_with_ipc2(ipc_id):
+    """
+    根据ipc获取相关的所有工程师数量,第三类
+    :return:
+    """
+    sql = "select pa_inventor from enterprise_patent where pa_main_kind_num = %s" .format(ipc_id)
+    cursor.execute(sql, ipc_id)
+    temp = cursor.fetchall()
+    result = []
+    for i in temp:
+        for j in i:
+            result.append(j)
+    result = list(set(result))
+    return len(result)
 
 
 
@@ -318,5 +374,6 @@ if __name__ == "__main__":
     # print(get_engineer_and_en_by_field("低温余热发电技术"))
     # print(get_engineer_and_en_by_ipc("A23C7/00"))
     # print(get_patent_by_first_ipc("A"))
-    print(get_third_ipc())
+    print(get_all_third_ipc())
+    # print(get_ipc_content_by_ipc_id("F21S"))
     # pass
