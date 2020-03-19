@@ -113,7 +113,11 @@
             let data = {
                 "name": params.data.name
                 };
-            window.location = '/get_patent_engineer/' + data.name.replace("/", "$");
+            if(data.name.indexOf("/") > -1 )
+            {
+                window.location = '/get_patent_engineer/' + data.name.replace("/", "$");
+            }
+
         });
 
 
