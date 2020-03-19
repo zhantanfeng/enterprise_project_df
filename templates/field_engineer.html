@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    技术领域工程师页面
+{% endblock %}
+
+{% block styles %}
+    <style type="text/css">
+        .page-header {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        a:hover{
+            text-decoration: none;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+
+<div class="container">
+    {% if engineer_list | length == 0 %}
+        <div class="row">
+            <div class="col-sm-8 offset-sm-2" id="search-results">
+                <h5>
+                    未找到"<strong>{{ field }}</strong>"相关结果
+                </h5>
+            </div>
+        </div>
+    {% else %}
+        <div class="row">
+                <div class="col-sm-8 offset-sm-2" id="search-results" style="margin-top: 30px">
+                    <h5>
+                        "{{ field }}"技术领域部分企业以及工程师
+                    </h5>
+                </div>
+        </div>
+        <br>
+        <br>
+
+        {% for engineer_info in engineer_list %}
+            <div class="row">
+                <div class="col-sm-8 offset-sm-2" id="search-results">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="card-title">
+                                <span class="text-primary">
+                                    <a href="#">
+                                        {{ engineer_info[0] }}
+                                    </a>
+                                </span>
+                            </h3>
+                            <small>工程师：
+                                {% for engineer in engineer_info[1] %}
+                                    <span class="text-primary">
+                                         {{ engineer }}&nbsp;&nbsp;&nbsp;&nbsp;
+                                    </span>
+                                {% endfor %}
+                            </small>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br>
+        {% endfor %}
+    {% endif %}
+</div>
+
+
+{% endblock %}

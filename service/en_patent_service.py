@@ -110,10 +110,96 @@ def get_engineer_and_en_by_field(field):
             result.append([ enterprise_dao.get_en_name_by_en_id(i), ten_engineer ])
     return result
 
+def get_patent_by_first_ipc():
+    """
+    获取所有第一类ipc的所有专利数量
+    :param ipc_id:
+    :return:
+    """
+    all_first_ipc = enterprise_patent_dao.get_first_ipc()
+    result = []
+    for i in all_first_ipc:
+        result.append([i[0]+":"+i[1], enterprise_patent_dao.get_patent_by_ipc(i[0])])
+    return result
 
 
+def get_patent_by_second_ipc(ipc_id):
+    """
+    获取所有第二类ipc的所有专利数量
+    :param ipc_id:
+    :return:
+    """
+    all_first_ipc = enterprise_patent_dao.get_second_ipc(ipc_id)
+    result = []
+    for i in all_first_ipc:
+        if enterprise_patent_dao.get_patent_by_ipc(i[0])[0] != 0:
+            result.append([i[0]+":"+i[1], enterprise_patent_dao.get_patent_by_ipc(i[0])[0]])
+    result = sorted(result, key=lambda x:(x[1]), reverse=True)
+    if len(result) > 10:
+        count = 0
+        for i in result[9:]:
+            count = count + i[1]
+        result = result[0:9]
+        result.append(["其他", count])
+    return result
+
+def get_patent_by_third_ipc(ipc_id):
+    """
+    获取所有第二类ipc的所有专利数量
+    :param ipc_id:
+    :return:
+    """
+    all_first_ipc = enterprise_patent_dao.get_third_ipc(ipc_id)
+    result = []
+    for i in all_first_ipc:
+        temp = i[0][4:7].replace("0","")
+        if enterprise_patent_dao.get_patent_by_ipc(i[0][0:4]+temp+i[0][7:])[0] != 0:
+            result.append([i[0][0:4]+temp+i[0][7:]+":"+i[1], enterprise_patent_dao.get_patent_by_ipc(i[0][0:4]+temp+i[0][7:])[0]])
+    result = sorted(result, key=lambda x:(x[1]), reverse=True)
+    if len(result) > 10:
+        count = 0
+        for i in result[9:]:
+            count = count + i[1]
+        result = result[0:9]
+        result.append(["其他", count])
+    return result
+
+def get_engineer_and_en_by_ipc(ipc_id):
+    """
+    根据ipc获取工程师以及所在的公司
+    :param ipc_id: ipc
+    :return: 前10家的企业以及专利前10的工程师
+    """
+    temp = enterprise_patent_dao.get_engineer_and_en_by_ipc(ipc_id)
+    en_id_list = []
+    for i in temp:
+        en_id_list.append(i[0])
+    en_id_dict = {}
+    for key in en_id_list:
+        en_id_dict[key] = en_id_dict.get(key, 0) + 1
+    list1 = sorted(en_id_dict.items(), key=lambda x:x[1], reverse=True)
+    ten_en = []
+    for i in list1[0:10]:
+        ten_en.append(i[0])
+    result = []
+    for i in ten_en:
+        temp1 = []
+        for j in temp:
+            if j[0] == i:
+                temp1.extend(j[1].split(","))
+        engineer_dict = {}
+        for key in temp1:
+            engineer_dict[key] = engineer_dict.get(key, 0) + 1
+        engineer_list = sorted(engineer_dict.items(), key=lambda x: x[1], reverse=True)
+        ten_engineer = []
+        for x in engineer_list[0:10]:
+            ten_engineer.append(x[0])
+        if ten_engineer != ['不公告发明人']:
+            result.append([ enterprise_dao.get_en_name_by_en_id(i), ten_engineer ])
+    return result
 
 if __name__ == "__main__":
     # print(get_count_by_firstkind("电子信息技术"))
-    print(get_pa_count_by_firstkind())
-    # pass
+    # print(get_engineer_and_en_by_ipc("A23C7/00"))
+    get_patent_by_second_ipc("F")
+    pass
