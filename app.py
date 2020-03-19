@@ -60,6 +60,18 @@ def get_data():
             'data1': data1,
             'data2': data2
         })
+    if field_name == "航空航天技术":
+        data = en_pa_service.get_count_by_secondkind(field_name)
+        data1 = []
+        data2 = []
+        for i in data:
+            data1.append(i[0])
+            data2.append({"value": i[1], "name": i[0]})
+        return jsonify({
+            'status': 'ok',
+            'data1': data1,
+            'data2': data2
+        })
     if field_name in all_field[0]:
         data = en_pa_service.get_count_by_firstkind(field_name)
         data1 = []
