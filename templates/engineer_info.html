@@ -115,11 +115,15 @@
                 };
             if(data.name.indexOf("/") > -1 )
             {
-                window.location = '/get_patent_engineer/' + data.name.replace("/", "$");
+                window.location = '/get_engineer/' + replaceAll(data.name, "/", "$");
             }
 
         });
 
+        function replaceAll(str , replaceKey , replaceVal){
+            var reg = new RegExp(replaceKey , 'g');//g就是代表全部
+            return str.replace(reg , replaceVal || '');
+        }
 
         function setOption(data1, data2) {
             var dom = document.getElementById("container");
