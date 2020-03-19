@@ -185,6 +185,77 @@ def get_engineer_and_en_by_field(field):
     result = cursor.fetchall()
     return result
 
+
+def get_first_ipc():
+    """
+    获取第一类ipc目录，只有1位
+    :return:
+    """
+    sql = "select ipc_id, ipc_content from ipc where char_length (ipc_id) = 1"
+    cursor.execute(sql)
+    temp = cursor.fetchall()
+    result = []
+    for i in temp:
+        result.append([i[0], i[1]])
+    return result
+
+def get_second_ipc(ipc_id):
+    """
+    获取第二类ipc目录，只有4位
+    :return:
+    """
+    query_param = ['%s%%' % ipc_id]
+    sql = "select ipc_id, ipc_content from ipc where char_length (ipc_id) = 4 and ipc_id like %s"
+    cursor.execute(sql, query_param)
+    temp = cursor.fetchall()
+    result = []
+    for i in temp:
+        if "(" in i[1]:
+            result.append([i[0], i[1][0:i[1].index("(")]])
+        else:
+            result.append([i[0], i[1]])
+    return result
+
+def get_third_ipc(ipc_id):
+    """
+    获取第三类ipc目录，超过4位
+    :return:
+    """
+    query_param = ['%s%%' % ipc_id]
+    sql = "select ipc_id, ipc_content from ipc where char_length (ipc_id) > 4 and ipc_id like %s"
+    cursor.execute(sql, query_param)
+    temp = cursor.fetchall()
+    result = []
+    for i in temp:
+        if "(" in i[1]:
+            result.append([i[0], i[1][0:i[1].index("(")]])
+        else:
+            result.append([i[0], i[1]])
+    return result
+
+def get_patent_by_ipc(ipc_id):
+    """
+    获取ipc_id开头的所有专利数量
+    :param ipc_id:
+    :return:
+    """
+    query_param = ['%s%%' % ipc_id]
+    sql = "select count(*) from enterprise_patent where pa_main_kind_num like %s"
+    cursor.execute(sql, query_param)
+    result = cursor.fetchone()
+    return result
+
+def get_engineer_and_en_by_ipc(ipc_id):
+    """
+    根据ipc获取工程师以及所在的公司
+    :param field: 技术领域
+    :return: 公司以及工程师
+    """
+    sql = "select en_id, pa_inventor from enterprise_patent where pa_main_kind_num =%s " .format(ipc_id)
+    cursor.execute(sql, ipc_id)
+    result = cursor.fetchall()
+    return result
+
 if __name__ == "__main__":
     # print(get_pa_id_by_patent("不锈钢"))
     # gg = get_en_name_by_pa_id(56460)
@@ -192,4 +263,6 @@ if __name__ == "__main__":
     # print(get_engineer("电子信息技术"))
     # print(get_all_field())
     # print(get_engineer_and_en_by_field("低温余热发电技术"))
-    pass
+    print(get_engineer_and_en_by_ipc("A23C7/00"))
+    # print(get_patent_by_first_ipc("A"))
+    # pass
