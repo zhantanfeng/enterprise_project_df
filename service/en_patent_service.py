@@ -198,8 +198,46 @@ def get_engineer_and_en_by_ipc(ipc_id):
             result.append([ enterprise_dao.get_en_name_by_en_id(i), ten_engineer ])
     return result
 
+
+def get_engineer_count_with_first_ipc():
+    """
+    根据第一类ipcid获取工程师数量
+    :return:
+    """
+    all_first_ipc = enterprise_patent_dao.get_first_ipc()
+    result = []
+    for i in all_first_ipc:
+        result.append([i[0] + ":" + i[1], enterprise_patent_dao.get_count_with_ipc(i[0])])
+    result = sorted(result, key=lambda x:(x[1]), reverse=True)
+    return result
+
+def get_engineer_count_with_second_ipc():
+    """
+    根据第二类ipcid获取工程师数量
+    :return:
+    """
+    all_second_ipc = enterprise_patent_dao.get_second_ipc()
+    result = []
+    for i in all_second_ipc:
+        if enterprise_patent_dao.get_count_with_ipc(i[0]) > 100:
+            result.append([i[0] + ":" + i[1], enterprise_patent_dao.get_count_with_ipc(i[0])])
+    result = sorted(result, key=lambda x: (x[1]), reverse=True)
+    return result
+
+def get_engineer_count_with_third_ipc():
+    """
+    根据第三类ipcid获取工程师数量
+    :return:
+    """
+    all_third_ipc = enterprise_patent_dao.get_third_ipc()
+    result = []
+    for i in all_third_ipc:
+            result.append([i[0] + ":" + i[1], enterprise_patent_dao.get_count_with_ipc(i[0])])
+    result = sorted(result, key=lambda x: (x[1]), reverse=True)
+    return result
+
 if __name__ == "__main__":
     # print(get_count_by_firstkind("电子信息技术"))
     # print(get_engineer_and_en_by_ipc("A23C7/00"))
-    get_patent_by_second_ipc("F")
-    pass
+    print(get_engineer_count_with_second_ipc())
+    # pass

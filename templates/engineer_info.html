@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    首页
+{% endblock %}
+
+{% block main %}
+    <div id="container1" style="height: 10%">
+        <ul class="breadcrumb">
+            <li><a href="{{ url_for('init_engineer_bar') }}">部</a></li>&nbsp;&nbsp;/&nbsp;&nbsp;
+            <li><a href="javascript:void(0);" onclick="second_ipc()">大类</a></li>&nbsp;&nbsp;/&nbsp;&nbsp;
+            <li><a href="javascript:void(0);" onclick="third_ipc()">小类</a></li>&nbsp;&nbsp;
+        </ul>
+    </div>
+    <div id="container" style="height: 90%">
+   </div>
+{% endblock %}
+
+{% block scripts %}
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-gl/dist/echarts-gl.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts-stat/dist/ecStat.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/dataTool.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/china.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/map/js/world.js"></script>
+       <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=xfhhaTThl11qYVrqLZii6w8qE5ggnhrY&__ec_v__=20190126"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/extension/bmap.min.js"></script>
+       <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+       <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=CXarKKMKBd6t5CGxs0s8rUGs2qhyniII"></script>
+       <script type="text/javascript">
+            var dom = document.getElementById("container");
+            //用于使chart自适应高度和宽度,通过窗体高宽计算容器高宽
+           var resizeWorldMapContainer = function () {
+                dom.style.width = window.innerWidth - 10-+'px';
+                dom.style.height = window.innerHeight - 80+'px';
+            };
+            //设置容器高宽
+            resizeWorldMapContainer();
+            // 基于准备好的dom，初始化echarts实例
+
+            var myChart = echarts.init(dom);
+            var app = {};
+            option = null;
+
+
+            $(document).ready(function(){
+                 myChart.showLoading({
+                　　text : '加载中',
+                　　effect : 'whirling'
+                });
+               $.ajax({
+                    type: "get",
+                    url: "/init_engineer_bar",
+                    dataType: "json",
+                    success: function (json_data) {
+                        if (json_data['status'] != 'ok') {
+                            console.log('获取数据失败');
+                            return false;
+                        }
+                        setOption(json_data['data1'], json_data['data2']);
+                    },
+                    error: function (error) {
+                    }
+                });
+           });
+
+       function second_ipc(){
+           myChart.showLoading({
+                　　text : '加载中',
+                　　effect : 'whirling'
+                });
+           $.ajax({
+                type: "get",
+                url: "/get_engineer_second_ipc",
+                dataType: "json",
+                success: function (json_data) {
+                    if (json_data['status'] != 'ok') {
+                        console.log('获取数据失败');
+                        return false;
+                    }
+                    setOption(json_data['data1'], json_data['data2']);
+
+                },
+                error: function (error) {
+                }
+            });
+       }
+
+       function third_ipc(){
+            myChart.showLoading({
+                　　text : '加载中',
+                　　effect : 'whirling'
+                });
+          $.ajax({
+                type: "get",
+                url: "/get_engineer_third_ipc",
+                dataType: "json",
+                success: function (json_data) {
+                    if (json_data['status'] != 'ok') {
+                        console.log('获取数据失败');
+                        return false;
+                    }
+                    setOption(json_data['data1'], json_data['data2']);
+                },
+                error: function (error) {
+                }
+            });
+       }
+
+        //添加事件
+        m=myChart.on('click', function (params) {
+
+            let data = {
+                "name": params.data.name
+                };
+            window.location = '/get_patent_engineer/' + data.name.replace("/", "$");
+        });
+
+
+        function setOption(data1, data2) {
+            var dom = document.getElementById("container");
+            var myChart = echarts.init(dom);
+            var app = {};
+            option = {
+                color: ['#3398DB'],
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                        type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                    }
+                },
+                grid: {
+                    left: '5%',
+                    right: '5%',
+                    bottom: '30%',
+                    containLabel: true
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: data1,
+                        axisTick: {
+                            alignWithLabel: true
+                        },
+                        axisLabel: {
+                            interval:0,
+                            formatter: function(name){
+                    　　　　    return name.slice(0, name.indexOf(":"));
+                    　　      }
+                        },
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value'
+                    }
+                ],
+                series: [
+                    {
+                        name: '工程师数量',
+                        type: 'bar',
+                        barWidth: '40%',
+                        data: data2
+                    }
+                ]
+            };
+            ;
+            if (option && typeof option === "object") {
+                myChart.setOption(option, true);
+            }
+            myChart.hideLoading();
+        }
+
+       </script>
+
+{% endblock %}
+
+
+
+
