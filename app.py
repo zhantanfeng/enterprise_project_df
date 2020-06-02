@@ -234,10 +234,16 @@ def get_field_engineer(field):
 def get_patent_engineer(ipc_id):
     #获取ipc分类的工程师以及所在的企业
     ipc_id = ipc_id.replace("$", "/")
-    engineer_list = en_pa_service.get_engineer_and_en_by_ipc2(ipc_id[0:ipc_id.index(":")])
+    engineer_list = en_pa_service.get_engineer_and_en_by_ipc(ipc_id[0:ipc_id.index(":")])
     return render_template("patent_engineer.html", engineer_list = engineer_list, ipc_id = ipc_id)
 
 
+@app.route("/get_engineer/<ipc_id>")
+def get_engineer(ipc_id):
+    #获取ipc分类的工程师以及所在的企业
+    ipc_id = ipc_id.replace("$", "/")
+    engineer_list = en_pa_service.get_engineer_and_en_by_ipc2(ipc_id[0:ipc_id.index(":")])
+    return render_template("patent_engineer.html", engineer_list = engineer_list, ipc_id = ipc_id)
 
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True
