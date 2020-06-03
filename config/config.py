@@ -10,6 +10,15 @@ MysqlDB_Params = {
     "charset": 'utf8'
 }
 
+MysqlDB_Params_kunshan = {
+    "host": "47.106.83.33",
+    "user": "root",
+    "password": "SEU.df@2020",
+    "db": 'kunshan',
+    "port": 3306,
+    "charset": 'utf8'
+}
+
 Milvus_Params = {
     "host": "39.100.224.138",
     "port": 19531
