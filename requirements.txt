@@ -1,3 +1,22 @@
+<<<<<<< HEAD
+certifi==2019.11.28
+chardet==3.0.4
+Click==7.0
+Flask==1.1.1
+idna==2.8
+itsdangerous==1.1.0
+Jinja2==2.10.3
+lxml==4.4.2
+MarkupSafe==1.1.1
+PyMySQL==0.9.3
+requests==2.22.0
+soupsieve==1.9.5
+urllib3==1.25.7
+Werkzeug==0.16.0
+bert-serving-client==1.10.0
+bert-serving-server==1.10.0
+pymilvus==0.2.6
+=======
 absl-py==0.7.1
 astor==0.8.0
 attrs==19.1.0
@@ -60,3 +79,4 @@ urllib3==1.25.7
 Werkzeug==0.16.0
 xlrd==1.2.0
 xlwt==1.3.0
+>>>>>>> origin/master
