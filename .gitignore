@@ -7,3 +7,5 @@ venv/
 env/
 
 config
+
+/*/__pycache__/*
