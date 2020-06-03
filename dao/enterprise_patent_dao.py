@@ -7,6 +7,7 @@ import pymysql
 from config.config import BERT_Params
 from config.config import Milvus_Params
 from config.config import MysqlDB_Params
+from config.config import MysqlDB_Params_kunshan
 from bert_serving.client import BertClient
 from milvus import Milvus, IndexType, MetricType
 
@@ -15,10 +16,17 @@ bc = BertClient(ip=BERT_Params['ip'])
 milvus = Milvus()
 # # 连接到服务器，注意端口映射，要和启动docker时设置的端口一致
 s = milvus.connect(host=Milvus_Params['host'], port=Milvus_Params['port'])
-#mysql数据库连接
-conn = pymysql.connect(host=MysqlDB_Params['host'], user=MysqlDB_Params["user"], password=MysqlDB_Params["password"], db=MysqlDB_Params['db'], port=MysqlDB_Params['port'],
+# mysql数据库连接
+conn = pymysql.connect(host=MysqlDB_Params['host'], user=MysqlDB_Params["user"], password=MysqlDB_Params["password"],
+                       db=MysqlDB_Params['db'], port=MysqlDB_Params['port'],
                        charset=MysqlDB_Params['charset'])
 cursor = conn.cursor()
+
+
+conn_kunshan = pymysql.connect(host=MysqlDB_Params_kunshan['host'], user=MysqlDB_Params_kunshan["user"], password=MysqlDB_Params_kunshan["password"],
+                       db=MysqlDB_Params_kunshan['db'], port=MysqlDB_Params_kunshan['port'],
+                       charset=MysqlDB_Params_kunshan['charset'])
+cursor_kunshan = conn_kunshan.cursor()
 
 
 def stringTovector(searched_patent):
@@ -31,6 +39,7 @@ def stringTovector(searched_patent):
     result = list(result)
     input = bc.encode(result)
     return input[0]
+
 
 def arraystr_to_vector(patent_vector):
     """
@@ -46,6 +55,7 @@ def arraystr_to_vector(patent_vector):
                 temp.append(float(j))
     return temp
 
+
 def get_pa_id_by_patent(searched_patent):
     """
     从Milvus根据搜索专利成果的向量搜索专利id
@@ -58,7 +68,8 @@ def get_pa_id_by_patent(searched_patent):
     searched_patent_vector = [arraystr_to_vector(stringTovector(searched_patent))]
     # print(searched_patent)
     try:
-        status, results = milvus.search(table_name="patent_vector", query_records=searched_patent_vector, top_k=4, nprobe=16)
+        status, results = milvus.search(table_name="patent_vector", query_records=searched_patent_vector, top_k=4,
+                                        nprobe=16)
         # 断开连接
         temp = []
         milvus.disconnect()
@@ -68,14 +79,15 @@ def get_pa_id_by_patent(searched_patent):
     except:
         return "error"
 
+
 def get_en_name_by_pa_id(pa_id):
     """
     根据专利id获取企业名
     :param pa_id:专利id
     :return:企业名
     """
-    sql = """select pa_applicant from enterprise_patent where pa_id=%s""" .format(pa_id)
-    cursor.execute(sql,pa_id)
+    sql = """select pa_applicant from enterprise_patent where pa_id=%s""".format(pa_id)
+    cursor.execute(sql, pa_id)
     result = cursor.fetchone()[0]
     return result
 
@@ -90,6 +102,7 @@ def get_count_by_firstkind(field):
     result = cursor.fetchone()
     return result
 
+
 def get_count_by_secondkind(field):
     """
      根据第二类技术领域寻找专利数量
@@ -100,6 +113,7 @@ def get_count_by_secondkind(field):
     result = cursor.fetchone()
     return result
 
+
 def get_count_by_thirdkind(field):
     """
      根据第三类技术领域寻找专利数量
@@ -109,6 +123,7 @@ def get_count_by_thirdkind(field):
     cursor.execute(sql, query_param)
     result = cursor.fetchone()
     return result
+
 
 def get_all_field():
     """
@@ -124,8 +139,9 @@ def get_all_field():
     secondkind = cursor.fetchall()
     cursor.execute(sql3)
     thirdkind = cursor.fetchall()
-    result = [[firstkind],[secondkind],[thirdkind]]
+    result = [[firstkind], [secondkind], [thirdkind]]
     return result
+
 
 def get_second_field(field):
     """
@@ -133,7 +149,7 @@ def get_second_field(field):
     :param field:
     :return:
     """
-    sql = "select distinct secondkind from technical_field where firstkind = %s " .format(field)
+    sql = "select distinct secondkind from technical_field where firstkind = %s ".format(field)
     cursor.execute(sql, field)
     temp = cursor.fetchall()
     result = []
@@ -148,13 +164,14 @@ def get_third_field(field):
     :param field:
     :return:
     """
-    sql = "select distinct thirdkind from technical_field where secondkind = %s " .format(field)
+    sql = "select distinct thirdkind from technical_field where secondkind = %s ".format(field)
     cursor.execute(sql, field)
     temp = cursor.fetchall()
     result = []
     for i in temp:
         result.append(i[0])
     return result
+
 
 def get_engineer_by_thirdkind(field):
     """
@@ -199,6 +216,7 @@ def get_first_ipc():
         result.append([i[0], i[1]])
     return result
 
+
 def get_second_ipc(ipc_id):
     """
     获取第二类ipc目录，只有4位
@@ -216,6 +234,7 @@ def get_second_ipc(ipc_id):
             result.append([i[0], i[1]])
     return result
 
+
 def get_second_ipc():
     """
     获取第二类ipc目录，只有4位
@@ -231,6 +250,7 @@ def get_second_ipc():
         else:
             result.append([i[0], i[1]])
     return result
+
 
 def get_third_ipc(ipc_id):
     """
@@ -261,11 +281,12 @@ def get_third_ipc():
     result = []
     for i in temp:
         if "(" in i[1]:
-            temp1 = i[0][4:7].replace("0","")
-            result.append([i[0][0:4]+temp1+i[0][7:], i[1][0:i[1].index("(")]])
+            temp1 = i[0][4:7].replace("0", "")
+            result.append([i[0][0:4] + temp1 + i[0][7:], i[1][0:i[1].index("(")]])
         else:
             result.append([i[0], i[1]])
     return result
+
 
 def get_ipc_content_by_ipc_id(ipc_id):
     """
@@ -274,7 +295,7 @@ def get_ipc_content_by_ipc_id(ipc_id):
     """
     if len(ipc_id) > 4:
         ipc_id = ipc_id[0:4]
-    sql = "select ipc_content from ipc where ipc_id = %s" .format(ipc_id)
+    sql = "select ipc_content from ipc where ipc_id = %s".format(ipc_id)
     cursor.execute(sql, ipc_id)
     temp = cursor.fetchone()
     result = ''
@@ -283,6 +304,7 @@ def get_ipc_content_by_ipc_id(ipc_id):
     else:
         result = temp[0]
     return result
+
 
 def get_all_third_ipc():
     """
@@ -298,16 +320,17 @@ def get_all_third_ipc():
     result_dict = {}
     for key in result:
         result_dict[key] = result_dict.get(key, 0) + 1
-    result_1 = sorted(result_dict.items(), key=lambda x:x[1], reverse=True)
+    result_1 = sorted(result_dict.items(), key=lambda x: x[1], reverse=True)
     result_2 = []
     for i in result_1:
         if len(i[0]) > 5:
-            result_2.append([i[0],i[1]])
-    result_2 = sorted(result_2, key=lambda x:x[1], reverse=True)[0:50]
+            result_2.append([i[0], i[1]])
+    result_2 = sorted(result_2, key=lambda x: x[1], reverse=True)[0:50]
     final_result = []
     for i in result_2:
         final_result.append([i[0], get_ipc_content_by_ipc_id(i[0])])
     return final_result
+
 
 def get_patent_by_ipc(ipc_id):
     """
@@ -321,16 +344,18 @@ def get_patent_by_ipc(ipc_id):
     result = cursor.fetchone()
     return result
 
+
 def get_engineer_and_en_by_ipc(ipc_id):
     """
     根据ipc获取工程师以及所在的公司
     :param field: 技术领域
     :return: 公司以及工程师
     """
-    sql = "select en_id, pa_inventor from enterprise_patent where pa_main_kind_num =%s " .format(ipc_id)
+    sql = "select en_id, pa_inventor from enterprise_patent where pa_main_kind_num =%s ".format(ipc_id)
     cursor.execute(sql, ipc_id)
     result = cursor.fetchall()
     return result
+
 
 def get_count_with_ipc(ipc_id):
     """
@@ -348,12 +373,13 @@ def get_count_with_ipc(ipc_id):
     result = list(set(result))
     return len(result)
 
+
 def get_count_with_ipc2(ipc_id):
     """
     根据ipc获取相关的所有工程师数量,第三类
     :return:
     """
-    sql = "select pa_inventor from enterprise_patent where pa_main_kind_num = %s" .format(ipc_id)
+    sql = "select pa_inventor from enterprise_patent where pa_main_kind_num = %s".format(ipc_id)
     cursor.execute(sql, ipc_id)
     temp = cursor.fetchall()
     result = []
@@ -363,6 +389,33 @@ def get_count_with_ipc2(ipc_id):
     result = list(set(result))
     return len(result)
 
+
+def get_ep_and_inventor_by_keyword(keyword):
+    """
+    根据关键字获取相关企业
+    """
+    query_param = ['%%%s%%' % keyword]
+    sql = """select ebi.name ep_name, ifnull(ebi.telephone,"") telephone, p.inventor inventor
+            from  ep_base_info ebi 
+            left join patent p on p.ep_name = ebi.name 
+            where p.abstract like %s""" .format(query_param)
+    cursor_kunshan.execute(sql, query_param)
+    result = cursor_kunshan.fetchall()
+    return result
+
+
+def get_inventor_by_keyword(ep_name, keyword):
+    """
+    根据企业名和关键词获取发明人
+    """
+    query_param = ['%%%s%%' % keyword]
+    sql = "select inventor from patent where ep_name=%s and abstract like %s" .format(ep_name, query_param)
+    cursor_kunshan.execute(sql, (ep_name, query_param))
+    temp = cursor_kunshan.fetchall()
+    result = []
+    for i in temp:
+        result.extend(i)
+    return list(set(result))
 
 
 if __name__ == "__main__":
@@ -374,6 +427,6 @@ if __name__ == "__main__":
     # print(get_engineer_and_en_by_field("低温余热发电技术"))
     # print(get_engineer_and_en_by_ipc("A23C7/00"))
     # print(get_patent_by_first_ipc("A"))
-    print(get_all_third_ipc())
+    print(get_ep_by_keyword("纳米纤维"))
     # print(get_ipc_content_by_ipc_id("F21S"))
     # pass

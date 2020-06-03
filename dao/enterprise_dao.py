@@ -7,10 +7,11 @@ from config.config import BERT_Params
 from config.config import Milvus_Params
 from config.config import MysqlDB_Params
 
-
-conn = pymysql.connect(host=MysqlDB_Params['host'], user=MysqlDB_Params["user"], password=MysqlDB_Params["password"], db=MysqlDB_Params['db'], port=MysqlDB_Params['port'],
+conn = pymysql.connect(host=MysqlDB_Params['host'], user=MysqlDB_Params["user"], password=MysqlDB_Params["password"],
+                       db=MysqlDB_Params['db'], port=MysqlDB_Params['port'],
                        charset=MysqlDB_Params['charset'])
 cursor = conn.cursor()
+
 
 def get_en_info_by_name_1(en_name):
     """
@@ -18,10 +19,11 @@ def get_en_info_by_name_1(en_name):
     :param en_name: 企业名
     :return: 企业信息
     """
-    sql = "select * from en_base_info where en_name=%s" .format(en_name)
-    cursor.execute(sql,en_name)
+    sql = "select * from en_base_info where en_name=%s".format(en_name)
+    cursor.execute(sql, en_name)
     result = cursor.fetchone()
     return result
+
 
 def get_en_name_by_en_id(en_id):
     """
@@ -29,10 +31,11 @@ def get_en_name_by_en_id(en_id):
     :param en_id:
     :return:
     """
-    sql = "select en_name from en_base_info where en_id =%s" .format(en_id)
+    sql = "select en_name from en_base_info where en_id =%s".format(en_id)
     cursor.execute(sql, en_id)
     result = cursor.fetchone()
     return result[0]
+
 
 def get_en_info_by_name_2(en_name):
     """
@@ -42,9 +45,10 @@ def get_en_info_by_name_2(en_name):
     """
     query_param = ['%%%s%%' % en_name]
     sql = "select * from en_base_info where en_name like %s"
-    cursor.execute(sql,query_param)
+    cursor.execute(sql, query_param)
     result = cursor.fetchall()
     return result
+
 
 def get_en_info_by_scope(scope):
     """
@@ -57,8 +61,6 @@ def get_en_info_by_scope(scope):
     cursor.execute(sql, query_param)
     result = cursor.fetchall()
     return result
-
-
 
 
 if __name__ == "__main__":

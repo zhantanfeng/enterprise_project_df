@@ -257,6 +257,7 @@ def get_engineer_count_with_second_ipc():
     result = sorted(result, key=lambda x: (x[1]), reverse=True)
     return result
 
+
 def get_engineer_count_with_third_ipc():
     """
     根据第三类ipcid获取工程师数量
@@ -270,8 +271,35 @@ def get_engineer_count_with_third_ipc():
     result = sorted(result, key=lambda x: (x[1]), reverse=True)
     return result
 
+
+def get_en_info_by_patent_2(search_content):
+    """
+    根据关键词寻找企业
+    :param search_content: 关键词
+    :return:
+    """
+    result = []
+    ep_info = enterprise_patent_dao.get_ep_and_inventor_by_keyword(search_content)
+    print(ep_info)
+    for j in ep_info:
+        temp = {}
+        temp["ep_name"] = j[0]
+        temp["telephone"] = j[1]
+        temp["inventor"] = []
+        if temp not in result:
+            result.append(temp)
+    for i in result:
+        for k in ep_info:
+            if k[0] == i['ep_name']:
+                i['inventor'].extend(k[2].split(","))
+        i['inventor'] = str(list(set(i['inventor']))).replace("[", "").replace("]", "").replace("'", "")
+    return result
+
+
 if __name__ == "__main__":
     # print(get_count_by_firstkind("电子信息技术"))
     # print(get_engineer_and_en_by_ipc("A23C7/00"))
-    print(get_engineer_count_with_third_ipc())
+    print(get_en_info_by_patent_2("纳米纤维"))
     # pass
+
+

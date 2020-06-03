@@ -11,32 +11,40 @@ app.config['SECRET_KEY'] = SECRET_KEY
 def index():
     return render_template("index.html")
 
-@app.route('/search_en',methods=['GET', 'POST'])
+
+@app.route('/search_en', methods=['GET', 'POST'])
 def search_en():
     if request.method == 'POST':
         search_content = request.form.get("enterprise")
         search_style = request.values.get("optradio")
         if search_style == "企业名":
             result = en_service.get_en_info_by_name(search_content)
-            return render_template("en_info.html", enterprises=result, enterprise_name = search_content)
+            return render_template("en_info.html", enterprises=result, enterprise_name=search_content)
         elif search_style == "企业经营范围":
             result = en_service.get_en_info_by_scope(search_content)
-            return render_template("en_info.html", enterprises=result, enterprise_name = search_content)
-        else:
+            return render_template("en_info.html", enterprises=result, enterprise_name=search_content)
+        elif search_style == "企业成果":
             result = en_pa_service.get_en_info_by_patent(search_content)
-            return render_template("en_info.html", enterprises=result, enterprise_name = search_content)
+            return render_template("en_info.html", enterprises=result, enterprise_name=search_content)
+        else:
+            result = en_pa_service.get_en_info_by_patent_2(search_content)
+            return render_template("en_info_with_inventor.html", result=result)
+
 
 @app.route('/area_info')
 def area_info():
     return render_template("area_info.html")
 
+
 @app.route('/patent_info')
 def patent_info():
     return render_template("patent_info.html")
 
+
 @app.route('/engineer_info')
 def engineer_info():
     return render_template("engineer_info.html")
+
 
 @app.route('/init_field_pic')
 def init_field_pic():
@@ -55,6 +63,7 @@ def init_field_pic():
         'data1': data1,
         'data2': data2
     })
+
 
 @app.route('/init_patent_pic')
 def init_patent_pic():
@@ -91,6 +100,7 @@ def init_engineer_bar():
         'data1': data1,
         'data2': data2
     })
+
 
 @app.route('/get_field_data')
 def get_field_data():
@@ -206,6 +216,7 @@ def get_engineer_second_ipc():
         'data2': data2
     })
 
+
 @app.route('/get_engineer_third_ipc')
 def get_engineer_third_ipc():
     """
@@ -224,26 +235,29 @@ def get_engineer_third_ipc():
         'data2': data2
     })
 
+
 @app.route("/get_field_engineer/<field>")
 def get_field_engineer(field):
-    #获取技术领域的工程师以及所在的企业
+    # 获取技术领域的工程师以及所在的企业
     engineer_list = en_pa_service.get_engineer_and_en_by_field(field)
-    return render_template("field_engineer.html", engineer_list = engineer_list, field=field)
+    return render_template("field_engineer.html", engineer_list=engineer_list, field=field)
+
 
 @app.route("/get_patent_engineer/<ipc_id>")
 def get_patent_engineer(ipc_id):
-    #获取ipc分类的工程师以及所在的企业
+    # 获取ipc分类的工程师以及所在的企业
     ipc_id = ipc_id.replace("$", "/")
     engineer_list = en_pa_service.get_engineer_and_en_by_ipc(ipc_id[0:ipc_id.index(":")])
-    return render_template("patent_engineer.html", engineer_list = engineer_list, ipc_id = ipc_id)
+    return render_template("patent_engineer.html", engineer_list=engineer_list, ipc_id=ipc_id)
 
 
 @app.route("/get_engineer/<ipc_id>")
 def get_engineer(ipc_id):
-    #获取ipc分类的工程师以及所在的企业
+    # 获取ipc分类的工程师以及所在的企业
     ipc_id = ipc_id.replace("$", "/")
     engineer_list = en_pa_service.get_engineer_and_en_by_ipc2(ipc_id[0:ipc_id.index(":")])
-    return render_template("patent_engineer.html", engineer_list = engineer_list, ipc_id = ipc_id)
+    return render_template("patent_engineer.html", engineer_list=engineer_list, ipc_id=ipc_id)
+
 
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True
