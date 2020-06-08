@@ -4,7 +4,7 @@ import service.en_patent_service as en_pa_service
 from config.config import SECRET_KEY
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = SECRET_KEY
+app.config['SECRET_KEY'] = "asdadsadasd"
 
 
 @app.route('/')

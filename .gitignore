@@ -2,10 +2,13 @@
 
 
 .idea
-__pycache__/
+__pycache__
 venv/
 env/
 
 config
 
-/*/__pycache__/*
+controller/__init__.py
+dao/__init__.py
+service/__init__.py
+*.pyc
