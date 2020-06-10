@@ -11,6 +11,7 @@
                 <table class="table table-hover table-striped">
                     <thead>
                         <tr>
+                            <th>序号</th>
                             <th>企业</th>
                             <th>联系电话</th>
                             <th>工程师</th>
@@ -19,6 +20,7 @@
                     <tbody id="file-container">
                     {% for i in result %}
                         <tr>
+                            <td>{{ loop.index }}</td>
                             <td class="nowrap">
                                 {{ i['ep_name'] }}
                             </td>

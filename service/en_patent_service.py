@@ -279,8 +279,7 @@ def get_en_info_by_patent_2(search_content):
     :return:
     """
     result = []
-    ep_info = enterprise_patent_dao.get_ep_and_inventor_by_keyword(search_content)
-    print(ep_info)
+    ep_info = enterprise_patent_dao.get_ep_and_inventor_by_keyword_with_title(search_content)
     for j in ep_info:
         temp = {}
         temp["ep_name"] = j[0]

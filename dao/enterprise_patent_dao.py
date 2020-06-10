@@ -20,13 +20,22 @@ s = milvus.connect(host=Milvus_Params['host'], port=Milvus_Params['port'])
 conn = pymysql.connect(host=MysqlDB_Params['host'], user=MysqlDB_Params["user"], password=MysqlDB_Params["password"],
                        db=MysqlDB_Params['db'], port=MysqlDB_Params['port'],
                        charset=MysqlDB_Params['charset'])
-cursor = conn.cursor()
 
 
 conn_kunshan = pymysql.connect(host=MysqlDB_Params_kunshan['host'], user=MysqlDB_Params_kunshan["user"], password=MysqlDB_Params_kunshan["password"],
                        db=MysqlDB_Params_kunshan['db'], port=MysqlDB_Params_kunshan['port'],
                        charset=MysqlDB_Params_kunshan['charset'])
+
+
+cursor = conn.cursor()
 cursor_kunshan = conn_kunshan.cursor()
+
+try:
+    conn.ping()
+    conn_kunshan.ping()
+except:
+    cursor = conn.cursor()
+    cursor_kunshan = conn_kunshan.cursor()
 
 
 def stringTovector(searched_patent):
@@ -399,6 +408,20 @@ def get_ep_and_inventor_by_keyword(keyword):
             from  ep_base_info ebi 
             left join patent p on p.ep_name = ebi.name 
             where p.abstract like %s""" .format(query_param)
+    cursor_kunshan.execute(sql, query_param)
+    result = cursor_kunshan.fetchall()
+    return result
+
+
+def get_ep_and_inventor_by_keyword_with_title(keyword):
+    """
+    根据关键字获取相关企业
+    """
+    query_param = ['%%%s%%' % keyword]
+    sql = """select ebi.name ep_name, ifnull(ebi.telephone,"") telephone, p.inventor inventor
+            from  ep_base_info ebi 
+            left join patent p on p.ep_name = ebi.name 
+            where p.name like %s""" .format(query_param)
     cursor_kunshan.execute(sql, query_param)
     result = cursor_kunshan.fetchall()
     return result

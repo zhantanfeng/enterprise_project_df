@@ -12,6 +12,11 @@ conn = pymysql.connect(host=MysqlDB_Params['host'], user=MysqlDB_Params["user"],
                        charset=MysqlDB_Params['charset'])
 cursor = conn.cursor()
 
+try:
+    conn.ping()
+except:
+    cursor = conn.cursor()
+
 
 def get_en_info_by_name_1(en_name):
     """
