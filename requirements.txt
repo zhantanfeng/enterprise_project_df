@@ -37,7 +37,7 @@ openpyxl==3.0.3
 pandas==1.0.1
 Pillow==6.0.0
 postmarkup==1.2.2
-protobuf==3.7.1
+protobuf==3.15.0
 pygame==1.9.6
 pymilvus==0.2.6
 PyMySQL==0.9.3
